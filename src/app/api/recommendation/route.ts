@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenAI } from "@google/genai";
-import { promises } from "dns";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY!,
@@ -70,7 +69,7 @@ export async function POST(req: NextRequest) {
       });
     } catch (err) {
       console.warn("Gemini failed, falling back to Google Books:", err.message);
-      const books = await fetchBooksFromGoogle(query, false);
+      const books = await fetchBooksFromGoogle(query);
       return NextResponse.json({ books, fallback: true });
     }
 
