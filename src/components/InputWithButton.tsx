@@ -17,7 +17,7 @@ export function InputWithButton() {
   async function handleSubmit(e: React.FormEvent) {
       e.preventDefault()
       try {
-        const results = await getRecommendations(query)
+        const results = await getRecommendations({query})
         // setData(results)
         console.log('results from handleSubmit' + results);
         setQuery('')
