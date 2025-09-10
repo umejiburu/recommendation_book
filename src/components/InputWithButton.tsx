@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useQueryStore } from "@/store"
 import { getRecommendations } from "./action"
-import { stat } from "fs"
 
 export function InputWithButton() {
   const query = useQueryStore((state) => state.query)
@@ -11,19 +10,32 @@ export function InputWithButton() {
   const setData = useQueryStore((state) => state.setData)
 
 
-  const apiKey = process.env.NEXT_PUBLIC_GOOGLE_BOOKS_KEY;
-  
-   
   async function handleSubmit(e: React.FormEvent) {
       e.preventDefault()
+      if (!query.trim()) return;
+
       try {
         const results = await getRecommendations({query})
-        // setData(results)
-        console.log('results from handleSubmit' + results);
+        console.log('API Results:', results);
+
+        if (results.books || results.recommendations) {
+          // Combine direct search results with AI recommendations
+          const allBooks = [
+            ...(results.books || []),
+            ...(results.recommendations || [])
+          ];
+
+          console.log(`Setting ${allBooks.length} books to display`);
+          setData(allBooks);
+        } else {
+          // No books found
+          setData([]);
+        }
+
         setQuery('')
       } catch (error) {
-        console.log(error);
-        
+        console.error('Error in handleSubmit:', error);
+        setData([]); // Clear data on error
       }
    }
 
